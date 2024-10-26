@@ -1,0 +1,189 @@
+from curses.ascii import isalpha
+
+import pandas as pd
+
+def verificar_arquivo(caminho_arquivo):
+    try:
+        df = pd.read_excel(caminho_arquivo, header=1)
+        print("\nArquivo Encontrado.")
+        return True
+
+    except FileNotFoundError:
+        print("\nArquivo não encontrado. Verifique o caminho.")
+        exit()
+
+# print(verificar_arquivo(r'/home/daphne/Documentos/Excel/Pandas.xlsx'))
+
+def verificar_matricula(caminho_arquivo):
+
+    df = pd.read_excel(caminho_arquivo, header=1)
+    df.columns = df.columns.str.strip()
+
+    matricula = False
+
+    if 'Matrícula' in df.columns:
+
+        try:
+            if pd.api.types.is_numeric_dtype(df['Matrícula']):
+                print("O campo 'Matrícula' é numérico")
+                matricula = True
+            else:
+                print("O campo 'Matrícula' não é numérico")
+        except Exception as e:
+            print(f"\nOcorreu um erro: {e}")
+    else:
+        print("\nA coluna 'Matrícula' não foi encontrada.")
+        print(df.columns.tolist()) # Lista as colunas disponíveis
+
+    return matricula
+
+# verificar_matricula(r'/home/daphne/Documentos/Excel/Pandas.xlsx')
+
+def verificar_nome(caminho_arquivo):
+
+    df = pd.read_excel(caminho_arquivo, header=1)
+    df.columns = df.columns.str.strip()
+
+    nome = False
+
+    if 'Nome do Empregado' in df.columns:
+
+        try:
+            if df['Nome do Empregado'].apply(lambda x: str(x).replace(" ", "").isalpha()).all():
+                print("O campo 'Nome' é alfabético")
+                nome = True
+            else:
+                print("\nO campo 'Nome' não é alfabético")
+        except Exception as e:
+            print(f"\nOcorreu um erro: {e}")
+    else:
+        print("\nA coluna 'Nome' não foi encontrada.")
+
+    return nome
+
+# verificar_nome(r'/home/daphne/Documentos/Excel/Pandas.xlsx')
+
+def verificar_sexo(caminho_arquivo):
+
+    df = pd.read_excel(caminho_arquivo, header=1)
+    df.columns = df.columns.str.strip()  # Estou tendo que aplicar em todos
+
+    sexo = False
+
+    if 'Sexo' in df.columns:
+
+        try:
+            if df['Sexo'].apply(lambda x: str(x).isalpha()).all():
+                df['Sexo'] = df['Sexo'].str.upper()
+
+                if df['Sexo'].isin(['M', 'F']).all():  #A função isin() verifica se todos os valores da coluna "Sexo" estão contidos na lista ['M', 'F'].
+                    print("O campo 'Sexo' está correto.")
+                    sexo = True
+                else:
+                    print("\nO campo 'Sexo' contém valores inválidos.")
+                    print()
+                    print(df['Sexo'].values)
+            else:
+                print("\nO campo 'Sexo' não é alfabético")
+        except Exception as e:
+            print(f"\nOcorreu um erro: {e}")
+    else:
+        print("\nO campo 'Sexo' não foi encontrado.")
+
+    return sexo
+
+# verificar_sexo(r'/home/daphne/Documentos/Excel/Pandas.xlsx')
+
+def verificar_salarioHoras(caminho_arquivo):
+
+    df = pd.read_excel(caminho_arquivo, header=1)
+    df.columns = df.columns.str.strip()
+
+    salarioValido = False
+    horasValido = False
+
+    if 'Salário Hora' in df.columns:
+
+        try:
+            if pd.api.types.is_numeric_dtype(df['Salário Hora']):
+                print("O campo 'Salário Hora' é numérico.")
+                salarioValido = True
+            else:
+                print("\nO campo 'Salário Hora' não é numérico.")
+        except Exception as e:
+            print(f"\nOcorreu um erro: {e}")
+    else:
+        print("\nO campo 'Salário Hora' não foi encontrado.")
+        return False
+
+    if 'Horas Trabalhadas' in df.columns:
+
+        try:
+            if pd.api.types.is_numeric_dtype(df['Horas Trabalhadas']):
+                print("O campo 'Horas Trabalhadas' é numérico.")
+                horasValido = True
+            else:
+                print("\nO campo 'Horas Trabalhadas' não é numérico.")
+        except Exception as e:
+            print(f"\nOcorreu um erro: {e}")
+    else:
+        print("\nO campo 'Horas Trabalhadas' não foi encontrado.")
+
+    return salarioValido and horasValido
+
+# verificar_salarioHoras(r'/home/daphne/Documentos/Excel/Pandas.xlsx')
+
+def calculo_salario(caminho_arquivo):
+    df = pd.read_excel(caminho_arquivo, header=1)
+    df.columns = df.columns.str.strip()
+
+    salarioBruto = df['Salário Hora'] * df['Horas Trabalhadas']
+    # print("\nSalário Bruto: " + ", ".join([f"{valor:.0f}" for valor in salarioBruto.tolist()]))
+
+    descontos = salarioBruto * 0.1
+    # print("Descontos: " + ", ".join([f"{valor:.0f}" for valor in descontos.tolist()]))
+
+    salarioLiquido = salarioBruto - descontos
+    # print("Salário Líquido: " + ", ".join([f"{valor:.0f}" for valor in salarioLiquido]))
+
+    totalBruto = salarioBruto.sum()
+    print("Total dos Salários Brutos: ", totalBruto)
+
+    # colocar return
+
+# calculo_salario(r'/home/daphne/Documentos/Excel/Pandas.xlsx')
+
+try:
+    if verificar_arquivo(r'/home/daphne/Documentos/Excel/Pandas.xlsx') == True and verificar_matricula(r'/home/daphne/Documentos/Excel/Pandas.xlsx') == True and verificar_nome(r'/home/daphne/Documentos/Excel/Pandas.xlsx') == True and verificar_sexo(r'/home/daphne/Documentos/Excel/Pandas.xlsx') == True and verificar_salarioHoras(r'/home/daphne/Documentos/Excel/Pandas.xlsx') == True:
+        print("\nTudo OK!")
+    else:
+        print("\nError. Contém dados inválidos.")
+        exit()
+except ValueError:
+    print("\nHá inconsistência de dados, tente novamente.")
+    exit()
+
+print("\nEscolha: ")
+print("1 - Todas as Informações ")
+print("2 - Total dos Salários Brutos " )
+
+opçao = input("\nDigite o número da opção desejada: ")
+
+if opçao == '1':
+    df = pd.read_excel(r'/home/daphne/Documentos/Excel/Pandas.xlsx', header=1)
+    df.columns = df.columns.str.strip()
+
+    # df['Salário Bruto'] = df['Matrícula'].apply(calculo_salario())
+
+    print()
+    print(df[['Matrícula', 'Nome do Empregado']].to_string(index=False))
+
+elif opçao == '2':
+    df = pd.read_excel(r'/home/daphne/Documentos/Excel/Pandas.xlsx', header=1)
+    df.columns = df.columns.str.strip()
+
+    print()
+    calculo_salario(r'/home/daphne/Documentos/Excel/Pandas.xlsx')
+
+else:
+    print("\nError. Digite um número válido.")
