@@ -1,0 +1,14 @@
+Pandas Excel Python
+
+print(df.head()) # Exibe toda tabela
+
+print(df.columns.tolist()) # Lista as colunas disponíveis
+
+.to_string(index=False) # Ocultar a linha de tipo
+
+.values # Exibe os valores da coluna
+
+.tolist() # Exclui metadados (Name e dtype) e Obtém valores
+
+* O None que aparece ao final é o valor de retorno da função verificar_matricula. Em Python, quando uma função não possui uma instrução return explícita, ela retorna None por padrão.
+* Para evitar que o None seja impresso, basta remover o print que está ao redor da chamada da função:
